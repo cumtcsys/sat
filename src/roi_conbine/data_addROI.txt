@@ -1,0 +1,92 @@
+surf_threshold = 0,matech:167335 total_ann:228234 total_surf__detect:8693374 iou_threshold[ 0.50 , 1.50]
+0.7331729715993235
+surf_threshold = 6,matech:167335 total_ann:228234 total_surf__detect:8514424 iou_threshold[ 0.50 , 1.50]
+0.7331729715993235
+surf_threshold = 12,matech:166012 total_ann:228234 total_surf__detect:7161505 iou_threshold[ 0.50 , 1.50]
+0.7273762892470009
+surf_threshold = 18,matech:164865 total_ann:228234 total_surf__detect:6493049 iou_threshold[ 0.50 , 1.50]
+0.722350745287731
+surf_threshold = 24,matech:163909 total_ann:228234 total_surf__detect:6090594 iou_threshold[ 0.50 , 1.50]
+0.718162061743649
+surf_threshold = 30,matech:163023 total_ann:228234 total_surf__detect:5819432 iou_threshold[ 0.50 , 1.50]
+0.7142800809695312
+surf_threshold = 36,matech:162223 total_ann:228234 total_surf__detect:5626256 iou_threshold[ 0.50 , 1.50]
+0.7107749064556551
+surf_threshold = 42,matech:161490 total_ann:228234 total_surf__detect:5478642 iou_threshold[ 0.50 , 1.50]
+0.7075632903073161
+surf_threshold = 48,matech:160780 total_ann:228234 total_surf__detect:5363102 iou_threshold[ 0.50 , 1.50]
+0.7044524479262512
+surf_threshold = 54,matech:160068 total_ann:228234 total_surf__detect:5269801 iou_threshold[ 0.50 , 1.50]
+0.7013328426089014
+surf_threshold = 60,matech:159424 total_ann:228234 total_surf__detect:5194437 iou_threshold[ 0.50 , 1.50]
+0.6985111771252311
+surf_threshold = 66,matech:158826 total_ann:228234 total_surf__detect:5131761 iou_threshold[ 0.50 , 1.50]
+0.6958910591761087
+surf_threshold = 72,matech:158210 total_ann:228234 total_surf__detect:5078394 iou_threshold[ 0.50 , 1.50]
+0.6931920748004241
+surf_threshold = 78,matech:157603 total_ann:228234 total_surf__detect:5032764 iou_threshold[ 0.50 , 1.50]
+0.6905325236380206
+surf_threshold = 84,matech:157027 total_ann:228234 total_surf__detect:4992988 iou_threshold[ 0.50 , 1.50]
+0.6880087979880298
+surf_threshold = 90,matech:156410 total_ann:228234 total_surf__detect:4958333 iou_threshold[ 0.50 , 1.50]
+0.6853054321442029
+surf_threshold = 96,matech:155854 total_ann:228234 total_surf__detect:4927882 iou_threshold[ 0.50 , 1.50]
+0.682869335857059
+surf_threshold = 102,matech:155273 total_ann:228234 total_surf__detect:4901217 iou_threshold[ 0.50 , 1.50]
+0.6803237028663565
+surf_threshold = 108,matech:154753 total_ann:228234 total_surf__detect:4877072 iou_threshold[ 0.50 , 1.50]
+0.678045339432337
+surf_threshold = 114,matech:154206 total_ann:228234 total_surf__detect:4854916 iou_threshold[ 0.50 , 1.50]
+0.6756486763584741
+surf_threshold = 120,matech:153674 total_ann:228234 total_surf__detect:4835058 iou_threshold[ 0.50 , 1.50]
+0.6733177353067465
+surf_threshold = 126,matech:153143 total_ann:228234 total_surf__detect:4816861 iou_threshold[ 0.50 , 1.50]
+0.6709911757231614
+surf_threshold = 132,matech:152654 total_ann:228234 total_surf__detect:4800631 iou_threshold[ 0.50 , 1.50]
+0.6688486378015546
+surf_threshold = 138,matech:152154 total_ann:228234 total_surf__detect:4785531 iou_threshold[ 0.50 , 1.50]
+0.666657903730382
+surf_threshold = 144,matech:151678 total_ann:228234 total_surf__detect:4771830 iou_threshold[ 0.50 , 1.50]
+0.6645723248946257
+surf_threshold = 150,matech:151233 total_ann:228234 total_surf__detect:4758897 iou_threshold[ 0.50 , 1.50]
+0.6626225715712821
+surf_threshold = 156,matech:150799 total_ann:228234 total_surf__detect:4747122 iou_threshold[ 0.50 , 1.50]
+0.6607210143975043
+surf_threshold = 162,matech:150335 total_ann:228234 total_surf__detect:4736161 iou_threshold[ 0.50 , 1.50]
+0.6586880131794561
+surf_threshold = 168,matech:149895 total_ann:228234 total_surf__detect:4725787 iou_threshold[ 0.50 , 1.50]
+0.6567601671968243
+surf_threshold = 174,matech:149457 total_ann:228234 total_surf__detect:4716175 iou_threshold[ 0.50 , 1.50]
+0.6548410841504771
+surf_threshold = 180,matech:149042 total_ann:228234 total_surf__detect:4707224 iou_threshold[ 0.50 , 1.50]
+0.6530227748714039
+surf_threshold = 186,matech:148634 total_ann:228234 total_surf__detect:4698679 iou_threshold[ 0.50 , 1.50]
+0.6512351358693271
+surf_threshold = 192,matech:148220 total_ann:228234 total_surf__detect:4690609 iou_threshold[ 0.50 , 1.50]
+0.6494212080583962
+surf_threshold = 198,matech:147828 total_ann:228234 total_surf__detect:4682884 iou_threshold[ 0.50 , 1.50]
+0.6477036725465969
+surf_threshold = 204,matech:147437 total_ann:228234 total_surf__detect:4675486 iou_threshold[ 0.50 , 1.50]
+0.64599051850294
+surf_threshold = 210,matech:147109 total_ann:228234 total_surf__detect:4668625 iou_threshold[ 0.50 , 1.50]
+0.6445533969522508
+surf_threshold = 216,matech:146745 total_ann:228234 total_surf__detect:4662008 iou_threshold[ 0.50 , 1.50]
+0.6429585425484371
+surf_threshold = 222,matech:146411 total_ann:228234 total_surf__detect:4655761 iou_threshold[ 0.50 , 1.50]
+0.6414951321888939
+surf_threshold = 228,matech:146064 total_ann:228234 total_surf__detect:4649818 iou_threshold[ 0.50 , 1.50]
+0.6399747627435001
+surf_threshold = 234,matech:145713 total_ann:228234 total_surf__detect:4644063 iou_threshold[ 0.50 , 1.50]
+0.638436867425537
+surf_threshold = 240,matech:145355 total_ann:228234 total_surf__detect:4638558 iou_threshold[ 0.50 , 1.50]
+0.6368683018305774
+surf_threshold = 246,matech:145000 total_ann:228234 total_surf__detect:4633254 iou_threshold[ 0.50 , 1.50]
+0.6353128806400449
+surf_threshold = 252,matech:144649 total_ann:228234 total_surf__detect:4628036 iou_threshold[ 0.50 , 1.50]
+0.6337749853220818
+surf_threshold = 258,matech:144322 total_ann:228234 total_surf__detect:4623149 iou_threshold[ 0.50 , 1.50]
+0.6323422452395349
+surf_threshold = 264,matech:143998 total_ann:228234 total_surf__detect:4618313 iou_threshold[ 0.50 , 1.50]
+0.6309226495614151
+surf_threshold = 270,matech:143708 total_ann:228234 total_surf__detect:4613786 iou_threshold[ 0.50 , 1.50]
+0.629652023800135
