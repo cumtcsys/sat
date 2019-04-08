@@ -1,0 +1,27 @@
+eta:0.100000 max_depth:6 colsample_bytree:0.500000 subsample:0.800000 min_child_weight:4.000000best_ntree_limit=534
+
+
+eta:0.100000 max_depth:6 colsample_bytree:0.300000 subsample:0.800000 min_child_weight:1.000000best_ntree_limit=626
+训练集：
+ACCU = 0.958904;RECALL = 0.959086;threshold = 0.5000;TP = 3399;TN = 3881;FP = 167;FN = 145;
+验证集：
+ACCU = 0.773669;RECALL = 0.752000;threshold = 0.5000;TP = 376;TN = 670;FP = 182;FN = 124;
+测试集：
+ACCU = 0.769316;RECALL = 0.722200;threshold = 0.5000;TP = 1838;TN = 2324;FP = 541;FN = 707;
+
+
+eta:0.100000 max_depth:5 colsample_bytree:0.700000 subsample:0.900000 min_child_weight:7.000000best_ntree_limit=347
+训练集：
+ACCU = 0.955479;RECALL = 0.970372;threshold = 0.5000;TP = 3439;TN = 3815;FP = 233;FN = 105;
+验证集：
+ACCU = 0.771450;RECALL = 0.746000;threshold = 0.5000;TP = 373;TN = 670;FP = 182;FN = 127;
+测试集：
+ACCU = 0.771719;RECALL = 0.729273;threshold = 0.5000;TP = 1856;TN = 2319;FP = 546;FN = 689;
+
+eta:0.100000 max_depth:5 colsample_bytree:0.300000 subsample:0.700000 min_child_weight:5.000000best_ntree_limit=799
+训练集：
+ACCU = 0.958904;RECALL = 0.965858;threshold = 0.5000;TP = 3423;TN = 3857;FP = 191;FN = 121;
+验证集：
+ACCU = 0.770710;RECALL = 0.750000;threshold = 0.5000;TP = 375;TN = 667;FP = 185;FN = 125;
+测试集：
+ACCU = 0.768392;RECALL = 0.722593;threshold = 0.5000;TP = 1839;TN = 2318;FP = 547;FN = 706;
