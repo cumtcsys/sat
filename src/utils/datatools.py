@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import glob
+from src import global_data
 PYTHON = False
 '''
     Description: get all scut video absolute path
@@ -88,7 +89,7 @@ def parse_all_ann_filtered():
 def parse_ann_filtered(set_num,v_num):
     
     parsed_box_dict = {}
-    path_ann_prefix = './../../data/bbox/ann_filter/'
+    path_ann_prefix = global_data.ann_filter_path
     path_ann = path_ann_prefix + ('set%02d/V%03d_ann.txt' % (set_num,v_num))
     fobj = open(path_ann,'r')
     for line in fobj.readlines():
@@ -107,3 +108,32 @@ def parse_ann_filtered(set_num,v_num):
                 rec_list[ii][jj] = int(rec_list[ii][jj])
         parsed_box_dict[framestr] = rec_list
     return parsed_box_dict          
+
+'''
+    DESCRIPTION: parse ann_filtered file
+    PARAMETERS:
+        set_num: set00->set20
+        v_num: such as set00 -> v000.txt,v001.txt,v002.txt       
+'''
+def parse_ann_forFPEval(set_num,v_num):
+    
+    parsed_box_dict = {}
+    path_ann_prefix = global_data.ann_forFPEval_path
+    path_ann = path_ann_prefix + ('set%02d/V%03d_ann.txt' % (set_num,v_num))
+    fobj = open(path_ann,'r')
+    for line in fobj.readlines():
+        box_start_index = line.find('[')
+        box_end_index = line.rfind(']')
+        framestr = line[:box_start_index].strip()
+        # 0100000000[]
+        if box_start_index + 1 == box_end_index:
+            parsed_box_dict[framestr] = []
+            continue
+        # box_end_index -2 remove '[12,13,40,80; ]'
+        recstr = line[box_start_index+1:box_end_index -2]
+        rec_list = [rec_4.split(' ') for rec_4 in recstr.split('; ')]
+        for ii in range(len(rec_list)):
+            for jj in range(len(rec_list[ii])):
+                rec_list[ii][jj] = int(rec_list[ii][jj])
+        parsed_box_dict[framestr] = rec_list
+    return parsed_box_dict 

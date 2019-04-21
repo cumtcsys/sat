@@ -79,19 +79,28 @@ def visual_surf_RoI_nums():
         plt.text(rect.get_x() + rect.get_width()/2 , height+2, str(height), ha="center", va="bottom")
 
 def visual_frames_RoI_nums():
-    datas = [34619, 18607, 17094, 16119, 13945, 12254, 11639, 10182, 8852, 7897, 7496, 6982, 6422, 5833, 5137, 4304, 3864, 3298, 2729, 2315, 1941, 1646, 1335, 1114, 884, 749, 529, 532, 389, 373, 291, 252, 207, 196, 152, 107, 87, 82, 83, 55, 53, 49, 32, 38, 29, 25, 21, 18, 13, 14, 7, 16, 16, 15, 14, 9, 14, 10, 10, 6, 7, 1, 2, 0]
-    datas[20] = sum(datas[20:])
-    datas = datas[:21]
-    label_list =  range(len(datas))
-    num_list = datas
-    x = range(len(num_list))
-    rects = plt.bar(left=x,height = num_list,color = 'green',label = 'surf')
-    plt.xlabel('总帧数')
-    plt.ylabel('单帧RoI数量')
-    plt.title('surf+dts单帧提取RoI数量统计')
-    for rect in rects:
+    #recall24 
+    datas_fast = [41594, 16690, 15697, 13917, 12628, 11537, 10278, 9365, 8561, 7502, 6857, 6153, 5453, 5069, 4544, 4132, 3608, 3170, 2800, 2649, 2300, 2073, 1859, 1649, 1478, 1347, 1060, 926, 767, 663, 569, 498, 491, 432, 380, 319, 274, 230, 207, 179, 139, 111, 100, 76, 73, 61, 47, 64, 47, 35, 40, 32, 24, 26, 31, 25, 27, 16, 14, 11, 7, 20, 9, 8, 11, 9, 11, 3, 12, 1, 6, 3, 2, 3, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    #recall25 
+    datas_road = [34619, 18640, 17086, 16154, 13970, 12252, 11619, 10222, 8844, 7907, 7469, 6976, 6402, 5858, 5121, 4296, 3841, 3301, 2733, 2306, 1930, 1655, 1326, 1116, 885, 743, 524, 537, 388, 367, 293, 246, 206, 199, 149, 108, 88, 79, 82, 55, 53, 50, 32, 37, 29, 25, 22, 18, 12, 14, 9, 15, 16, 15, 13, 11, 12, 12, 10, 4, 7, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    datas_road[30] = sum(datas_road[30:])
+    datas_road = datas_road[:31]
+    datas_fast[30] = sum(datas_fast[30:])
+    datas_fast = datas_fast[:31]
+    label_list =  range(len(datas_road))
+    x = range(len(datas_fast))
+    rects_road = plt.bar(left=x,height = datas_road,width = 0.4,color = 'blue',label = 'road')
+    rects_fast = plt.bar(left=[i+0.4 for i in x],width = 0.4,height = datas_fast,color = 'orange',label = 'fast')
+    for rect in rects_road:
         height = rect.get_height()
         plt.text(rect.get_x() + rect.get_width() / 2, height+1, str(height), ha="center", va="bottom")
+    for rect in rects_fast:
+        height = rect.get_height()
+        plt.text(rect.get_x() + rect.get_width() / 2, height+1, str(height), ha="center", va="bottom")
+    plt.ylabel('总帧数')
+    plt.xlabel('单帧RoI数量')
+    plt.title('路面过滤-单帧提取RoI数量统计')
+    plt.legend()
 #visual_thresh_recall()
 visual_frames_RoI_nums()
 #visual_surf_RoI_nums()

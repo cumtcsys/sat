@@ -1,0 +1,95 @@
+matech:145162 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.6360226784791048
+matech:125639 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5504832759361007
+matech:104598 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.45829280475301665
+
+matech:143834 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.6302040887860705
+matech:122824 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5381494431153991
+matech:100680 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.4411262125713084
+
+matech:142363 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.6237589491486807
+matech:119969 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5256403515690038
+matech:96815 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.4241918382011444
+
+matech:140785 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.6168449924200601
+matech:116970 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5125003286101106
+matech:92953 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.4072706082354075
+
+matech:139095 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.6094403112594968
+matech:113969 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.49935154271493293
+matech:89113 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.3904457705688022
+
+
+
+
+matech:137142 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.6008833039774968
+matech:110735 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.4851818747425887
+matech:85077 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.37276216514629723
+
+matech:135218 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5924533592716248
+matech:107550 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.47122689870921947
+matech:81176 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.3556700579230088
+
+matech:133417 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5845623351472612
+matech:104675 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.4586301777999772
+matech:77666 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.3402911047433774
+
+matech:131520 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5762506900812324
+matech:101793 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.44600278661373854
+matech:74177 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.32500416239473523
+
+matech:129573 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5677199716080864
+matech:98725 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.43256044235302366
+matech:70849 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.3104226364170106
+
+
+
+matech:127474 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.558523269977304
+matech:95679 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.4192144903914404
+matech:67480 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.29566147024544986
+
+matech:125363 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5492739907288134
+matech:92640 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.4058992087068535
+matech:64280 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.28164077218994543
+
+matech:123004 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.5389381073810212
+matech:89405 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.391725159266367
+matech:60979 total_ann:228234 total_detect:8508442 iou_threshold[0] = 0.50 iou_threshold[1] = 1.50
+0.2671775458520641

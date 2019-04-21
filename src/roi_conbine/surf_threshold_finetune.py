@@ -1,90 +1,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-'''
-    DESCRIPTION: compute the two input rectangle IOU(area(ann&&detected)/(area(ann) || area(detected))))
-    PARAM:
-        rec1: x,y,w,h
-        rec2: x,y,w,h      
-'''
-def iou_1(rec1,rec2,iou_threshold):
-    x1,y1,width1,height1 = rec1[0],rec1[1],rec1[2],rec1[3]
-    x2,y2,width2,height2 = rec2[0],rec2[1],rec2[2],rec2[3]
+from src.utils import datatools
+from src.utils import evaltools
+from src import global_data
 
-    endx = max(x1+width1,x2+width2);
-    startx = min(x1,x2);
-    width = width1+width2-(endx-startx);
-
-    endy = max(y1+height1,y2+height2);
-    starty = min(y1,y2);
-    height = height1+height2-(endy-starty);
-
-    if width <=0 or height <= 0:
-        ratio = 0 # iou = 0 
-    else:
-        Area = width*height; # 
-        Area1 = width1*height1; 
-        Area2 = width2*height2;
-        ratio = Area*1./(Area1+Area2-Area);
-    if ratio > iou_threshold: return True
-    return False
-'''
-    DESCRIPTION: compute the two input rectangle IOU(area(ann&&detected)/area(ann))
-    PARAM:
-        rec1: x,y,w,h (ann)
-        rec2: x,y,w,h (detected)  
-'''
-def iou_2(rec1,rec2,iou_threshold):
-    x1,y1,width1,height1 = rec1[0],rec1[1],rec1[2],rec1[3]
-    x2,y2,width2,height2 = rec2[0],rec2[1],rec2[2],rec2[3]
-
-    endx = max(x1+width1,x2+width2);
-    startx = min(x1,x2);
-    width = width1+width2-(endx-startx);
-
-    endy = max(y1+height1,y2+height2);
-    starty = min(y1,y2);
-    height = height1+height2-(endy-starty);
-
-    if width <=0 or height <= 0:
-        ratio = 0 # iou = 0 
-    else:
-        Area = width*height; # 
-        Area1 = width1*height1; 
-        ratio = Area*1./(Area1);
-    # return IOU
-    if ratio > iou_threshold: return True
-    return False
-def iou(ann,detected,ioulist):
-    if iou_1(ann,detected,ioulist[0]) or  iou_2(ann,detected,ioulist[1]):return True
-    return False
-'''
-    DESCRIPTION: parse ann_filtered file
-    PARAMETERS:
-        dbpath: where the ann_filtered file located
-        set_num: set00->set20
-        v_num: such as set00 -> v000.txt,v001.txt,v002.txt       
-'''
-def parse_ann_filtered(dbpath,set_num,v_num):
-    parsed_box_dict = {}
-    path_ann_prefix = dbpath
-    path_ann = path_ann_prefix + ('set%02d/V%03d_ann.txt' % (set_num,v_num))
-    fobj = open(path_ann,'r')
-    for line in fobj.readlines():
-        box_start_index = line.find('[')
-        box_end_index = line.rfind(']')
-        framestr = line[:box_start_index].strip()
-        # 0100000000[]
-        if box_start_index + 1 == box_end_index:
-            parsed_box_dict[framestr] = []
-            continue
-        # box_end_index -2 remove '[12,13,40,80; ]'
-        recstr = line[box_start_index+1:box_end_index -2]
-        rec_list = [rec_4.split(' ') for rec_4 in recstr.split('; ')]
-        for ii in range(len(rec_list)):
-            for jj in range(len(rec_list[ii])):
-                rec_list[ii][jj] = int(rec_list[ii][jj])
-        parsed_box_dict[framestr] = rec_list
-    return parsed_box_dict
 '''
     DESCRIPTION: parse detected_box file
     PARAMETERS:
@@ -141,7 +60,7 @@ def cal_surf_bbox_num(surf_response_threshold = 126):
 '''
 def cal_frames_RoIs():
     scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]
-    path_detect_prefix = 'H:/飒特项目/输出文件/行人检测ROI输出/recall15/'
+    path_detect_prefix = 'H:/飒特项目/输出文件/行人检测ROI输出/recall25/'
     roi_nums = [0 for i in range(101)]
     frame_nums = 0
     thresh = 126
@@ -165,7 +84,6 @@ def cal_frames_RoIs():
     print('单帧RoIs数量统计：',roi_nums)
 
 
-
 '''
     DESCRIPTION: eval the detected bbox and write the result to file
                  adapt the common styles
@@ -177,7 +95,6 @@ def cal_frames_RoIs():
 def write_eval_common(typestr,iou_threshold_list,withoccl,surf_response_threshold):
     total_ann_box = 0# how many boxes(filtered) scut have
     matched_box = 0#how many boxes iou greater than iou_threshold
-    path_ann_prefix = './../../data/ann_filter/'#parsed scut ann path
     path_detect_prefix = 'H:/飒特项目/输出文件/行人检测ROI输出/recall18/'#detect bbox path
     scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]#scut[0] = 2 means set00/ have V000.txt,V001.txt,V002.txt
     total_detect_num,temp_detect_num = 0,0
@@ -191,7 +108,7 @@ def write_eval_common(typestr,iou_threshold_list,withoccl,surf_response_threshol
         #process v by v
         for v_num in range(scut[set_num]+1):  
 #            if v_num != 10:continue
-            ann_dict = parse_ann_filtered(path_ann_prefix,set_num,v_num)
+            ann_dict = datatools.parse_ann_filtered(set_num,v_num)
             detect_dict = parse_detected_box(path_detect_prefix,set_num,v_num,typestr)
             temp_total_box,temp_matched_box,temp_detect_num = 0,0,0
             #process all frames
@@ -215,7 +132,7 @@ def write_eval_common(typestr,iou_threshold_list,withoccl,surf_response_threshol
 #                        if detect_box[4]<surf_response_threshold:continue
                         #总召回率，忽略surf得分低的RoI
                         if detect_box[4]<surf_response_threshold and detect_box[4]!= -1 :continue
-                        if iou(ann_box[:4],detect_box[:4],iou_threshold_list) :
+                        if evaltools.iou(ann_box[:4],detect_box[:4],iou_threshold_list) :
                             matched_box = matched_box + 1
                             temp_matched_box = temp_matched_box + 1
                             break
@@ -245,7 +162,6 @@ def write_eval_common(typestr,iou_threshold_list,withoccl,surf_response_threshol
 def write_eval_sate(typestr,iou_threshold_list ,withoccl,surf_response_threshold):
     total_id = 0# how many boxes(filtered) scut have
     matched_id = 0#how many boxes iou greater than iou_threshold
-    path_ann_prefix = './../../data/ann_filter/'#parsed scut ann path
     path_detect_prefix = 'H:/飒特项目/输出文件/行人检测ROI输出/recall21/'#detect bbox path
     scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]#scut[0] = 2 means set00/ have V000.txt,V001.txt,V002.txt
     #destiguish withoccl and not
@@ -278,7 +194,7 @@ def write_eval_sate(typestr,iou_threshold_list ,withoccl,surf_response_threshold
     for set_num in range(21):
         #process v by v
         for v_num in range(scut[set_num]+1):  
-            ann_dict = parse_ann_filtered(path_ann_prefix,set_num,v_num)
+            ann_dict = datatools.parse_ann_filtered(set_num,v_num)
             detect_dict = parse_detected_box(path_detect_prefix,set_num,v_num,typestr)
             temp_detect_num = 0
             temp_matched_num = 0
@@ -296,7 +212,7 @@ def write_eval_sate(typestr,iou_threshold_list ,withoccl,surf_response_threshold
 #                        if detect_box[4]<surf_response_threshold:continue
                         #总召回率
                         if detect_box[4]<surf_response_threshold and detect_box[4]!= -1 :continue
-                        if iou(ann_box[:4],detect_box[:4],iou_threshold_list):
+                        if evaltools.iou(ann_box[:4],detect_box[:4],iou_threshold_list):
                             if first_match_flag == False:
                                 first_match_flag == True
                                 detect_key = '%02d%03d%05d' % (set_num,v_num,ann_box[4])
@@ -322,34 +238,13 @@ def write_eval_sate(typestr,iou_threshold_list ,withoccl,surf_response_threshold
         print(matched_id*1.0/total_id)
     fobj.flush()
     fobj.close()
-#write_eval_common('addROI',0.3)
-#write_eval_common('addROI',0.5,True)
 
 if __name__ == '__main__':
-#    for surf_threshold in range(6,271,6):
-#        cal_surf_bbox_num(surf_threshold)
-#    write_eval_common('surf',[0.5,1.5],True,6)
-#    cal_frames_RoIs()
-#    cal_surf_bbox_num()
-#    write_eval_common('addROI',[0.5,1.5],True,120)
-#    write_eval_common('recycleProcess',[0.5,1.5],True,120)
-#    write_eval_common('final',[0.5,1.5],False,120)
-#        write_eval_common('final',[0.5,1.5],True,120)
-#    write_eval_sate('addROI',[0.5,1.5],True,6)
-#    write_eval_common('surf',[0.5,1.5],True,130)
-#    write_eval_common('surf',[0.5,1.5],False,130)
-#    write_eval_sate('surf',[0.5,1.5],True,130)
+
 #    write_eval_common('recycleProcess',[0.5,1.5],False,-1)
-    write_eval_common('addROI',[0.5,1.5],True,0)
+#    write_eval_common('addROI',[0.5,1.5],True,0)
 #    write_eval_sate('addROI',[0.5,1.5],True,0)
-    write_eval_common('addROI',[0.5,1.5],False,0)
+#    write_eval_common('addROI',[0.5,1.5],False,0)
 #    write_eval_sate('addROI',[0.5,1.5],False,0)
-#    cal_frames_RoIs()
-#    for surf_threshold in range(0,271,6):
-#        write_eval_common('final',[0.5,1.5],False,surf_threshold)
-#        write_eval_sate('final',[0.5,1.5],False,surf_threshold)
-#        write_eval_common('final',[0.5,1.5],False,surf_threshold)
-#        write_eval_sate('final',[0.5,1.5],False,surf_threshold)
-#    for surf_threshold in range(6,1300):
-#        write_eval_sate('surf',[0.5,1.5],True,surf_threshold)
-#    cal_frames_RoIs()
+    cal_frames_RoIs()
+
