@@ -11,7 +11,7 @@ from src.utils import datatools
 '''
     @Description:将所有的GT转化为[[左上点，中心点，宽，高],...,]
 '''
-def box2whc():
+def __box2whc():
     whclist = []
     ann_filtered_dict = datatools.parse_all_ann_filtered()
     for key in ann_filtered_dict:
@@ -22,6 +22,27 @@ def box2whc():
             cp = tuple([int(x+w/2),int(y+h/2)])
             whclist.append([ltp,cp,w,h])
     return whclist
+'''将PD程序检测出的kp（与检测框一样的格式）转化成点'''
+def __surfbox2kp():
+    kp = []
+    detect_bboxes = datatools.parse_whole_dataset_detected_box('surf')
+    for framestr,frameboxes in detect_bboxes.items():
+        for box in frameboxes:
+            x,y,w = box[0],box[1],box[2]
+            kpr = w/5
+            kpx = int(x + 2.5*kpr) 
+            kpy = int(y + kpr)
+            kp.append([kpx,kpy,kpr])
+    
+    for y in range(300):
+        cnt = 0
+        for item in kp:
+            if item[1] == y:cnt = cnt + 1
+        print('%d:%d',y,cnt)
+                
+    return kp
+
+
 '''统计scut数据集宽高分布，以三维图可视化'''
 def line3d(whclist):
     fig = plt.figure()
@@ -52,7 +73,8 @@ def line2d(whclist):
     plt.ylabel('cpoint y')
     plt.xlabel('w')    
 '''统计scut数据集BBox中心线位置并可视化'''
-def plot_center_line_position(whclist):
+def plot_center_line_position():
+    whclist = __box2whc()
     plt.figure()
     plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
     x_all = [whc[0][0] for whc in whclist]
@@ -132,6 +154,50 @@ def plot_head_position(whclist):
     plt.ylabel('y')
     plt.xlabel('x')  
     plt.show()
+    
+'''统计PD输出的surfbox的surf点位置并可视化'''
+def plot_surfkp_position():
+    surfkps = __surfbox2kp()
+    plt.figure()
+    plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
+    x_all = [kp[0] for kp in surfkps]
+    y_all = [300 - kp[1] for kp in surfkps]
+    x_far = [kp[0] for kp in surfkps if kp[2]*11<=48]
+    y_far = [300 - kp[1] for kp in surfkps if kp[2]*11<=48]
+    x_mid = [kp[0] for kp in surfkps if kp[2]*11<=90 and kp[2]*11 > 48]
+    y_mid = [300 - kp[1] for kp in surfkps if kp[2]*11<=90 and kp[2]*11 > 48]
+    x_near = [kp[0] for kp in surfkps if kp[2]*11>=90]
+    y_near = [300 - kp[1] for kp in surfkps if kp[2]*11>=90]
+    plt_far = plt.subplot(2,3,1)
+    plt_mid = plt.subplot(2,3,2)
+    plt_near = plt.subplot(2,3,3)
+    plt_all = plt.subplot(2,1,2)
+    plt.sca(plt_all)
+    plt.title('Head Position - All')
+    plt.scatter(x_all,y_all,s=0.1,color = 'orange')
+    plt.ylabel('y')
+    plt.xlabel('x')   
+    
+    plt.sca(plt_far)
+    plt.title('Head Position - far')
+    plt.scatter(x_far,y_far,s=0.1,color = 'r')
+    plt.ylabel('y')
+    plt.xlabel('x')   
+    
+    plt.sca(plt_mid)
+    plt.title('Head Position - mid')
+    plt.scatter(x_mid,y_mid,s=0.1,color = 'g')
+    plt.ylabel('y')
+    plt.xlabel('x')  
+    
+    plt.sca(plt_near)
+    plt.title('Head Position - near')
+    plt.scatter(x_near,y_near,s=0.1,color = 'b')
+    plt.ylabel('y')
+    plt.xlabel('x')  
+    plt.show()    
+    
+
 '''寻找scut数据集BBox头部集中区域'''
 def head_position_cut(whclist):
     x_all = [whc[0][0] for whc in whclist]
@@ -165,8 +231,9 @@ def head_position_cut(whclist):
         print('near -> thresh = %d:%d/%d  %lf'%(low,y_near_num,len(y_near),y_near_num/len(y_near)))
         print()
 if __name__ == '__main__':
-    whclist = box2whc()
+    
     #head_position_cut(whclist)
     #plot_head_position(whclist)
-    plot_center_line_position(whclist)
+    plot_center_line_position()
+    plot_surfkp_position()
     #line2d(whclist)

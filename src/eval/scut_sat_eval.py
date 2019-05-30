@@ -3,76 +3,65 @@ from src.utils import datatools
 from src.utils import evaltools
 from src import global_data
 
-'''
-    DESCRIPTION: parse detected_box file
-    PARAMETERS:
-        dbpath: where the detected_box file located
-        set_num: set00->set20
-        v_num: such as set00 -> v000.txt,v001.txt,v002.txt 
-        typestr: label,addROI,simpleTrace,sizeFilter,positionFilter,recycleProcess,hogLBP,haarLike,final
-'''
-def parse_detected_box(dbpath,set_num,v_num,typestr):
-    parsed_box_dict = {}
-    path_ann_prefix = dbpath
-    path_ann = path_ann_prefix + ('set%02d/V%03d_%s.txt' % (set_num,v_num,typestr))
-    fobj = open(path_ann,'r')
-    for line in fobj.readlines():
-        box_start_index = line.find('[')
-        box_end_index = line.rfind(']')
-        framestr = line[:box_start_index].strip()
-        # 0100000000[]
-        if box_start_index + 1 == box_end_index:
-            parsed_box_dict[framestr] = []
-            continue        
-        # box_end_index -2 remove '[12,13,40,80; ]'
-        recstr = line[box_start_index+1:box_end_index -2]
-        rec_list = [rec_4.split(' ') for rec_4 in recstr.split('; ')]
-        for ii in range(len(rec_list)):
-            for jj in range(len(rec_list[ii])):
-                rec_list[ii][jj] = int(rec_list[ii][jj])
-        parsed_box_dict[framestr] = rec_list
-    return parsed_box_dict
-'''
-    @Description: 虚警评估
-    
-'''
-def eval_common_fp(typestr,iou_threshold_list,withoccl = True):
-    path_detect_prefix = 'H:/飒特项目/输出文件/行人检测ROI输出/recall25/'#detect bbox path
-    scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]#scut[0] = 2 means set00/ have V000.txt,V001.txt,V002.txt
-    matched_RoI_nums = 0;
-    total_detect_num = 0
-    #process set by set
-    for set_num in range(21):
-#        if set_num != 5:continue
-        #process v by v
-        for v_num in range(scut[set_num]+1):  
-#            if v_num != 10:continue
-            ann_dict = datatools.parse_ann_forFPEval(set_num,v_num)
-            detect_dict = parse_detected_box(path_detect_prefix,set_num,v_num,typestr)
-            temp_detect_num = 0
-            #process all frames
-            for framestr,box_ann_list in ann_dict.items():#annbox x,y,w,h,id,occl,person(ride_person:0,walk_person:1,people:2,person?:3)
-                #process all box in a frame
-                for detect_box in detect_dict[framestr]:
-                    for ann_box in box_ann_list:
-#                    if ann_box[3] >= 90 or ann_box[3] <48:continue 
-#                    if ann_box[3] < 90:continue
-#                    if ann_box[3] > 48:continue
-                        if withoccl == False and ann_box[5] == 1:
-                            continue
-                        if evaltools.iou(ann_box[:4],detect_box[:4],iou_threshold_list) :
-                            matched_RoI_nums += 1
-                            break
-                        elif ann_box[6] == 2:#people
-                            if evaltools.iou_2(detect_box[:4],ann_box[:4],0.8):#交集除以检测框面积
-                                matched_RoI_nums += 1
-                                break
-                            
-                    temp_detect_num = temp_detect_num + 1
-            total_detect_num = total_detect_num + temp_detect_num
-    fp =  total_detect_num - matched_RoI_nums
-    print( ('matech_roi_nums:%d fp:%d total_detect:%d iou_threshold[0] = %.2f iou_threshold[1] = %.2f') % (matched_RoI_nums,fp,total_detect_num,iou_threshold_list[0],iou_threshold_list[1]))
 
+'''虚警评估'''
+def eval_common_fp(typestr,iou_threshold_list,withoccl = True,ptype='walk_ride',psize = 'near_mid_far'):
+    all_ann_bboxes = datatools.parse_whole_dataset_ann_filtered()#所有GT
+    all_detect_bboxes = datatools.parse_whole_dataset_detected_box(typestr)#所有检测框
+    filteredBoxes = filterAnnBoxes(all_ann_bboxes,typestr,withoccl,ptype,psize)#根据行人类别，尺度过滤
+    match_cnt = 0
+    for framestr,ann_bboxes in filteredBoxes.items():#遍历每一帧GoundTruth
+        for detect_box in all_detect_bboxes[framestr]:
+            for ann_box in ann_bboxes:
+                if evaltools.iou(ann_box[:4],detect_box[:4],iou_threshold_list) :
+                    match_cnt = match_cnt + 1
+                    break
+    detect_cnt = datatools.countBoxes(all_detect_bboxes)
+    fp = detect_cnt - match_cnt
+    return fp
+'''过滤GroundTruth'''
+def filterAnnBoxes(annbboxes,typestr,withoccl = True,ptype='walk_ride',psize = 'near_mid_far'):
+    filteredBoxes = {}
+    for framestr,frameboxes in annbboxes.items():#处理所有帧
+        framefilteredBox = []
+        for box in frameboxes:#处理单帧所有bbox
+            flag = True
+            if ptype == 'walk' and box[6] != 1:#box[6]=1表示walk_person
+                flag = False
+            if ptype == 'ride' and box[6] != 0:#box[6]=0表示ride_person
+                flag = False
+            if withoccl == False and box[5] == 1:#过滤遮挡
+                flag = False
+            if psize == 'near' and box[3] < 90:#过滤不合要求的尺度
+                flag = False
+            if psize == 'mid' and (box[3] >= 90 or box[3] <48):
+                flag = False
+            if psize == 'far' and box[3] > 48:#过滤不合要求的尺度
+                flag = False
+            if flag == True:
+                framefilteredBox.append(box)
+        filteredBoxes[framestr] = framefilteredBox
+    return filteredBoxes
+
+
+'''common标准评估'''
+def eval_common(typestr,iou_threshold_list,withoccl = True,ptype='walk_ride',psize = 'near_mid_far'):
+    all_ann_bboxes = datatools.parse_whole_dataset_ann_filtered()#所有GT
+    all_detect_bboxes = datatools.parse_whole_dataset_detected_box(typestr)#所有检测框
+    fAnnBoxes = filterAnnBoxes(all_ann_bboxes,typestr,withoccl,ptype,psize)
+    match_cnt = 0
+    for framestr,ann_bboxes in fAnnBoxes.items():#遍历每一帧GoundTruth
+        for ann_box in ann_bboxes:
+            for detect_box in all_detect_bboxes[framestr]:
+#                if detect_box[4]>0:continue#只评估segs
+#                if detect_box[4]<0:continue#只评估SURF
+                if evaltools.iou(ann_box[:4],detect_box[:4],iou_threshold_list) :
+                    match_cnt = match_cnt + 1
+                    break
+    detect_cnt = datatools.countBoxes(all_detect_bboxes)
+    GT_cnt = datatools.countBoxes(fAnnBoxes)
+    fp = eval_common_fp(typestr,iou_threshold_list,withoccl,ptype,psize)
+    print( ('匹配成功:%d GT总数:%d 输出框总数:%d 检测率：%lf 虚警：%d iou = [%.2f,%.2f]') % (match_cnt,GT_cnt,detect_cnt,match_cnt/GT_cnt,fp,iou_threshold_list[0],iou_threshold_list[1]))
 '''
     DESCRIPTION: eval the detected bbox and write the result to file
                  adapt the common styles
@@ -82,10 +71,9 @@ def eval_common_fp(typestr,iou_threshold_list,withoccl = True):
         withoccl: if need exclude occl object,set withoccl = False
 '''
 def write_eval_common(typestr,iou_threshold_list,withoccl = True):
+    print('common')
     total_ann_box = 0# how many boxes(filtered) scut have
     matched_box = 0#how many boxes iou greater than iou_threshold
-    path_ann_prefix = global_data.ann_filter_path#parsed scut ann path
-    path_detect_prefix = 'H:/飒特项目/输出文件/行人检测ROI输出/recall26/'#detect bbox path
     scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]#scut[0] = 2 means set00/ have V000.txt,V001.txt,V002.txt
     total_detect_num,temp_detect_num = 0,0
     #destiguish withoccl and not
@@ -93,14 +81,13 @@ def write_eval_common(typestr,iou_threshold_list,withoccl = True):
         eval_path = './../../data/eval/common/eval_'+'withoccl_'+typestr+'_'+str(iou_threshold_list[0])+'_'+str(iou_threshold_list[1])+'_''.txt'
     else: eval_path = './../../data/eval/common/eval_'+typestr+'_'+str(iou_threshold_list[0])+'_'+str(iou_threshold_list[1])+'_'+'.txt'
     fobj = open(eval_path,'w')
+    cnt = 0
     #process set by set
     for set_num in range(21):
-#        if set_num != 5:continue
-        #process v by v
-        for v_num in range(scut[set_num]+1):  
-#            if v_num != 10:continue
+        for v_num in range(scut[set_num]+1):    
+            tempcnt = 0
             ann_dict = datatools.parse_ann_filtered(set_num,v_num)
-            detect_dict = parse_detected_box(path_detect_prefix,set_num,v_num,typestr)
+            detect_dict = datatools.parse_detected_box(set_num,v_num,typestr)
             temp_total_box = 0
             temp_matched_box = 0
             temp_detect_num = 0
@@ -108,9 +95,6 @@ def write_eval_common(typestr,iou_threshold_list,withoccl = True):
             for framestr,box_ann_list in ann_dict.items():  
                 #process all box in a frame
                 for ann_box in box_ann_list:
-#                    if ann_box[3] >= 90 or ann_box[3] <48:continue 
-#                    if ann_box[3] < 90:continue
-#                    if ann_box[3] > 48:continue
                     if withoccl == False and ann_box[5] == 1:
                         continue
                     total_ann_box = total_ann_box + 1
@@ -120,15 +104,20 @@ def write_eval_common(typestr,iou_threshold_list,withoccl = True):
                             matched_box = matched_box + 1
                             temp_matched_box = temp_matched_box + 1
                             break
-
-                
+                tempcnt = tempcnt+len(box_ann_list)
                 temp_detect_num = temp_detect_num + len(detect_dict[framestr])
+            cnt = cnt + tempcnt    
             total_detect_num = total_detect_num + temp_detect_num
             if temp_total_box==0:fobj.writelines('%02d%03d[%d %d %f] %d\n' % (set_num,v_num,temp_matched_box,temp_total_box,0,temp_detect_num))
             else:fobj.writelines('%02d%03d[%d %d %f] %d\n' % (set_num,v_num,temp_matched_box,temp_total_box,temp_matched_box*1.0/temp_total_box,temp_detect_num))
     if total_ann_box == 0:fobj.writelines('total:[%d %d %f] %d' % (matched_box,total_ann_box,0,total_detect_num))        
     else:fobj.writelines('total:[%d %d %f] %d' % (matched_box,total_ann_box,matched_box*1./total_ann_box,total_detect_num))        
-    print( ('matech:%d total_ann:%d total_detect:%d iou_threshold[0] = %.2f iou_threshold[1] = %.2f') % (matched_box,total_ann_box,total_detect_num,iou_threshold_list[0],iou_threshold_list[1]))
+    print(cnt)
+    resstr = 'common'
+    if withoccl == True:resstr = resstr + '带遮挡'
+    else:resstr = resstr + '忽略遮挡'
+    print(resstr)
+    print( ('匹配成功:%d GT总数:%d 输出框总数:%d iou = [%.2f,%.2f]') % (matched_box,total_ann_box,total_detect_num,iou_threshold_list[0],iou_threshold_list[1]))
     if total_ann_box == 0:
         print(0)
     else:
@@ -146,8 +135,6 @@ def write_eval_common(typestr,iou_threshold_list,withoccl = True):
 def write_eval_sate(typestr,iou_threshold_list ,withoccl = True):
     total_id = 0# how many boxes(filtered) scut have
     matched_id = 0#how many boxes iou greater than iou_threshold
-    path_ann_prefix = global_data.ann_filter_path#parsed scut ann path
-    path_detect_prefix = 'H:/飒特项目/输出文件/行人检测ROI输出/recall26/'#detect bbox path
     scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]#scut[0] = 2 means set00/ have V000.txt,V001.txt,V002.txt
     #destiguish withoccl and not
     if withoccl == True:
@@ -157,7 +144,6 @@ def write_eval_sate(typestr,iou_threshold_list ,withoccl = True):
     ann_id_dict = {}
     detect_id_dict = {}
     total_detect_num,temp_detect_num = 0,0
-    temp_matched_box,total_matched_box = 0,0
     total_matched_num,temp_matched_num = 0,0
     #process set by set
     for set_num in range(21):
@@ -182,7 +168,7 @@ def write_eval_sate(typestr,iou_threshold_list ,withoccl = True):
         #process v by v
         for v_num in range(scut[set_num]+1):  
             ann_dict = datatools.parse_ann_filtered(set_num,v_num)
-            detect_dict = parse_detected_box(path_detect_prefix,set_num,v_num,typestr)
+            detect_dict = datatools.parse_detected_box(set_num,v_num,typestr)
             temp_detect_num = 0
             temp_matched_num = 0
             #process all frames
@@ -213,7 +199,11 @@ def write_eval_sate(typestr,iou_threshold_list ,withoccl = True):
             else:fobj.writelines('%02d%03d[%d %d %f] %d\n' % (set_num,v_num,temp_matched_id,temp_total_id,temp_matched_id*1.0/temp_total_id,temp_detect_num))
             total_id = total_id + temp_total_id
             matched_id = matched_id + temp_matched_id
-    print( ('matech:%d total_ann:%d total_detect:%d total_matched_num:%d iou_threshold[0] = %.2f iou_threshold[1] = %.2f') % (matched_id,total_id,total_detect_num,total_matched_num,iou_threshold_list[0],iou_threshold_list[1]))
+    resstr = 'sate'
+    if withoccl == True:resstr = resstr + '带遮挡'
+    else:resstr = resstr + '忽略遮挡'
+    print(resstr)
+    print( ('匹配行人数:%d 行人总数:%d 输出框总数:%d 匹配框总数:%d iou=[%.2f,%.2f]') % (matched_id,total_id,total_detect_num,total_matched_num,iou_threshold_list[0],iou_threshold_list[1]))
     if total_id == 0:
         fobj.writelines('total:[%d %d %f] %d' % (matched_id,total_id,0,total_detect_num))    
         print(0)
@@ -222,52 +212,31 @@ def write_eval_sate(typestr,iou_threshold_list ,withoccl = True):
         print(matched_id*1.0/total_id)
     fobj.flush()
     fobj.close()
-#write_eval_common('addROI',0.3)
-#write_eval_common('addROI',0.5,True)
 
 if __name__ == '__main__':
-    #write_eval_common('final',0.5,True)
-    #write_eval_common('final',0.3,True)
-#    write_eval_sate('final',0.3,True)
-#    for ious in [0.3,0.4,0.5,0.6,0.7]:
-#        for label in ['label','addROI','simpleTrace','sizeFilter','positionFilter','recycleProcess','haarLike','hogLBP','final']:
-#            for withoccl in [True,False]:
-#                write_eval_sate(label,[ious,0.8],withoccl)
-#                write_eval_common(label,[ious,0.8],withoccl)
+
+#    eval_common(typestr,iou_threshold_list,withoccl = True,ptype='walk_ride',psize = 'near_mid_far')
+    pstr = 'final'
+    iou_list = [0.5,1.5]
+#    eval_common(pstr,iou_list,withoccl =True,ptype='walk',psize = 'near')
+#    eval_common('recycleprocess',iou_list,withoccl =True,psize = 'near')
+#    eval_common('recycleprocess',iou_list,withoccl =True,psize = 'mid')
+#    eval_common('recycleprocess',iou_list,withoccl =True,psize = 'far')
     
-#    write_eval_common('addROI',[0.5,1.5],True)
-#    write_eval_common('addROI',[0.5,1.5],False)
+#    eval_common(pstr,iou_list,withoccl =True)
+#    eval_common(pstr,iou_list,withoccl =True,psize = 'near')
+#    eval_common(pstr,iou_list,withoccl =True,psize = 'mid')
+#    eval_common(pstr,iou_list,withoccl =True,psize = 'far')
+    
+    
+    
 #    
-#    write_eval_common('final',[0.5,1.5],True)
-#    write_eval_common('final',[0.5,1.5],False)
-    eval_common_fp('final',[0.3,1.5],True)
-#    write_eval_common('final',[0.5,1.5],True)
-#    write_eval_common('final',[0.5,1.5],False)
-#    write_eval_sate('final',[0.5,1.5],True)
-#    write_eval_sate('final',[0.5,1.5],False)
-#    write_eval_common('recycleProcess',[0.5,1.5],True)
-#    write_eval_common('final',[0.5,1.5],False)
     
-    
-#    write_eval_sate('addROI',[0.5,1.5],True)
-#    write_eval_sate('addROI',[0.5,1.5],False)
-    
-#    write_eval_sate('final',[0.5,1],True)
-#    write_eval_sate('final',[0.5,1],False)
-    
-#    write_eval_sate('surf',[0.5,1.5],True)
-#    write_eval_sate('surf',[0.5,1.5],False)
-    
-    
-    
-    
-    
-    
-    
-#    write_eval_sate('final',[0.5,0.6],False)
-#    write_eval_common('final',[0.5,0.8],False)
-#    write_eval_sate('final',[0.5,0.8],False)
-#    write_eval_common('final',[0.5,0.9],False)
-#    write_eval_sate('final',[0.5,0.9],False)
-#    write_eval_common('final',[0.5,1.0],False)
-#    write_eval_sate('final',[0.5,1.0],False)
+#    eval_common('final',iou_list,withoccl =True)
+    write_eval_common(pstr,iou_list,True)
+    write_eval_sate(pstr,iou_list,True)
+#    write_eval_common(pstr,iou_list,False)
+#    write_eval_sate(pstr,iou_list,True)
+#    write_eval_sate(pstr,iou_list,False)
+#    eval_common_fp(pstr,iou_list,True)
+#    eval_common_fp(pstr,iou_list,False)

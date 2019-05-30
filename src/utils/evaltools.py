@@ -5,7 +5,7 @@
         rec1: x,y,w,h
         rec2: x,y,w,h      
 '''
-def iou_1(rec1,rec2,iou_threshold):
+def iou_1(rec1,rec2):
     x1,y1,width1,height1 = rec1[0],rec1[1],rec1[2],rec1[3]
     x2,y2,width2,height2 = rec2[0],rec2[1],rec2[2],rec2[3]
 
@@ -24,15 +24,14 @@ def iou_1(rec1,rec2,iou_threshold):
         Area1 = width1*height1; 
         Area2 = width2*height2;
         ratio = Area*1./(Area1+Area2-Area);
-    if ratio >= iou_threshold: return True
-    return False
+    return ratio
 '''
     DESCRIPTION: compute the two input rectangle IOU(area(ann&&detected)/area(ann))
     PARAM:
         rec1: x,y,w,h (ann)
-        rec2: x,y,w,h (detected)  
+        rec2: x,y,w,h (detected)
 '''
-def iou_2(rec1,rec2,iou_threshold):
+def iou_2(rec1,rec2):
     x1,y1,width1,height1 = rec1[0],rec1[1],rec1[2],rec1[3]
     x2,y2,width2,height2 = rec2[0],rec2[1],rec2[2],rec2[3]
 
@@ -51,8 +50,7 @@ def iou_2(rec1,rec2,iou_threshold):
         Area1 = width1*height1; 
         ratio = Area*1./(Area1);
     # return IOU
-    if ratio >= iou_threshold: return True
-    return False
+    return ratio
 def iou(ann,detected,ioulist):
-    if iou_1(ann,detected,ioulist[0]) or  iou_2(ann,detected,ioulist[1]):return True
+    if iou_1(ann,detected) >= ioulist[0] or  iou_2(ann,detected) >= ioulist[1]:return True
     return False

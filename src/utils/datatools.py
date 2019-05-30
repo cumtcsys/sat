@@ -2,6 +2,15 @@
 import glob
 from src import global_data
 PYTHON = False
+'''统计有多少个GoundTruth,或者统计有多少个检测框'''
+def countBoxes(allBoxes):
+    cnt = 0
+    for framestr,bboxes in allBoxes.items():
+        cnt = cnt + len(bboxes)
+    return cnt
+'''统计数据集帧数'''
+def countFrames(allBoxes):
+    return len(allBoxes)
 '''
     Description: get all scut video absolute path
 '''
@@ -109,6 +118,45 @@ def parse_ann_filtered(set_num,v_num):
         parsed_box_dict[framestr] = rec_list
     return parsed_box_dict          
 
+def parse_whole_dataset_ann_filtered():
+    whole_dataset_ann_dict = {}
+    scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]#scut[0] = 2 means set00/ have V000.txt,V001.txt,V002.txt
+    for set_num in range(21):
+        for v_num in range(scut[set_num]+1):  
+            temp_dict = parse_ann_filtered(set_num,v_num)
+            whole_dataset_ann_dict = dict(whole_dataset_ann_dict, **temp_dict)
+    return whole_dataset_ann_dict     
+   
+def parse_whole_dataset_detected_box(typestr):
+    whole_dataset_detected_box = {}
+    scut = [2,3,1,2,11,10,6,1,2,1,0,3,3,1,2,11,9,7,1,2,1]#scut[0] = 2 means set00/ have V000.txt,V001.txt,V002.txt
+    for set_num in range(21):
+        for v_num in range(scut[set_num]+1):  
+            temp_dict = parse_detected_box(set_num,v_num,typestr)
+            whole_dataset_detected_box = dict(whole_dataset_detected_box, **temp_dict)
+    return whole_dataset_detected_box        
+
+def parse_detected_box(set_num,v_num,typestr):
+    parsed_box_dict = {}
+    path_ann_prefix = global_data.detect_box_path
+    path_ann = path_ann_prefix + ('set%02d/V%03d_%s.txt' % (set_num,v_num,typestr))
+    fobj = open(path_ann,'r')
+    for line in fobj.readlines():
+        box_start_index = line.find('[')
+        box_end_index = line.rfind(']')
+        framestr = line[:box_start_index].strip()
+        # 0100000000[]
+        if box_start_index + 1 == box_end_index:
+            parsed_box_dict[framestr] = []
+            continue        
+        # box_end_index -2 remove '[12,13,40,80; ]'
+        recstr = line[box_start_index+1:box_end_index -2]
+        rec_list = [rec_4.split(' ') for rec_4 in recstr.split('; ')]
+        for ii in range(len(rec_list)):
+            for jj in range(len(rec_list[ii])):
+                rec_list[ii][jj] = int(rec_list[ii][jj])
+        parsed_box_dict[framestr] = rec_list
+    return parsed_box_dict
 '''
     DESCRIPTION: parse ann_filtered file
     PARAMETERS:
